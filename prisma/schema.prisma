@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id          Int      @id @default(autoincrement())
+  fullName    String
+  phoneNumber String
+  city        String
+  type        String
+  subType     String?
+  budget      String?
+  moveIn      String?
+  area        String?
+  createdAt   DateTime @default(now())
+  callStatus  String   @default("Not Called")
+  
+  surveyResponse SurveyResponse?
+  engagementEvents EngagementEvent[]
+}
+
+model SurveyResponse {
+  id               Int      @id @default(autoincrement())
+  leadId           Int      @unique
+  lead             Lead     @relation(fields: [leadId], references: [id])
+  willingnessToPay String
+  createdAt        DateTime @default(now())
+}
+
+model EngagementEvent {
+  id        Int      @id @default(autoincrement())
+  leadId    Int
+  lead      Lead     @relation(fields: [leadId], references: [id])
+  eventType String   // e.g., 'preview_clicked', 'preview_viewed', 'details_clicked', 'unlock_clicked', 'priority_interest_clicked'
+  createdAt DateTime @default(now())
+}
+
+model Visit {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+}
+
+model Settings {
+  key   String @id
+  value String
+}
